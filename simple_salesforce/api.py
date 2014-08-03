@@ -352,15 +352,19 @@ class SFType(object):
         result = self._call_salesforce('GET', self.base_url + 'describe/layouts/' + record_id)
         return result.json(object_pairs_hook=OrderedDict)
 
-    def get(self, record_id):
+    def get(self, record_id, external_field=None):
         """Returns the result of a GET to `.../{object_name}/{record_id}` as a
         dict decoded from the JSON payload returned by Salesforce.
 
         Arguments:
 
         * record_id -- the Id of the SObject to get
+        * external_field -- an external field used to lookup record_id
         """
-        result = self._call_salesforce('GET', self.base_url + record_id)
+        url = self.base_url
+        if external_field:
+            url = '{}{}/'.format(self.base_url, external_field)
+        result = self._call_salesforce('GET', url + record_id)
         return result.json(object_pairs_hook=OrderedDict)
 
     def create(self, data):
