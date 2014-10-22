@@ -4,6 +4,7 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
+  - "3.4"
   - "pypy"
 # command to install dependencies (mock & nose are already installed)
 install:
@@ -11,8 +12,24 @@ install:
   - pip install pylint
 # command to run tests
 script: python setup.py test
+matrix:
+  fast_finish: true
+  allow_failures:
+    # Python 3.2 doesn't appear to work. With 3.3 and 3.4 in the world this
+    # probably isn't a priority, but lets keep an eye on it anyways
+    - python: "3.2"
 after_success:
   - pylint --rcfile=.pylintrc simple_salesforce
 # turn off email notifications
 notifications:
   email: false
+deploy:
+  # Allow travis-ci to deploy new tags to PyPI
+  provider: pypi
+  user: simple-salesforce
+  password:
+    secure: J7qjXx9tmsjZQIyLMRK3roEV1+6GmmME34UrdomlipNixc5MELQLZP2gUThIOf3++824AGX9Dgkq0h5YyAwnawXq7QQFcsOOcz8evcE9v6nVc7EEKCOvIeZ7dXHTAk1a+nLH4I7S5t4B+2bpLI5W3AyHxdpD8TrbZ28tFtuQ2e4=
+  on:
+    tags: true
+    all_branches: true
+    repo: neworganizing/simple-salesforce

@@ -149,6 +149,60 @@ class Salesforce(object):
         """
         return SFType(name, self.session_id, self.sf_instance, self.sf_version, self.proxies)
 
+    # User utlity methods
+    def set_password(self, user, password):
+        """Sets the password of a user
+
+        salesforce dev documentation link:
+        https://www.salesforce.com/us/developer/docs/api_rest/Content/dome_sobject_user_password.htm
+
+        Arguments:
+
+        * user: the userID of the user to set
+        * password: the new password
+        """
+
+        url = self.base_url + 'sobjects/User/%s/password' % user
+        params = { 'NewPassword' : password, }
+
+        result = self.request.post(url, headers=self.headers, data=json.dumps(params))
+
+        # salesforce return 204 No Content when the request is successful
+        if result.status_code != 200 and result.status_code != 204:
+            raise SalesforceGeneralError(result.content)
+        json_result = result.json(object_pairs_hook=OrderedDict)
+        if len(json_result) == 0:
+            return None
+        else:
+            return json_result
+
+    def setPassword(self, user, password):
+        import warnings
+        warnings.warn(
+            "This method has been deprecated. Please use set_password instread.", DeprecationWarning)
+        return self.set_password(user, password)
+
+    # Generic Rest Function
+    def restful(self,path,params):
+        """Allows you to make a direct REST call if you know the path
+
+        Arguments:
+
+        * path: The path of the request
+            Example: sobjects/User/ABC123/password'
+        * params: dict of parameters to pass to the path
+        """
+
+        url = self.base_url + path
+        result = self.request.get(url, headers=self.headers, params=params)
+        if result.status_code != 200:
+            raise SalesforceGeneralError(result.content)
+        json_result = result.json(object_pairs_hook=OrderedDict)
+        if len(json_result) == 0:
+            return None
+        else:
+            return json_result
+        
     # Search Functions
     def search(self, search):
         """Returns the result of a Salesforce search as a dict decoded from
@@ -293,12 +347,7 @@ class Salesforce(object):
 
         Returns a `requests.result` object.
         """
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + self.session_id,
-            'X-PrettyPrint': '1'
-        }
-        result = self.request.request(method, url, headers=headers, **kwargs)
+        result = self.request.request(method, url, headers=self.headers, **kwargs)
 
         if result.status_code >= 300:
             _exception_handler(result)

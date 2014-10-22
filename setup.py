@@ -15,7 +15,7 @@ if sys.version_info < (3, 0):
 
 setup(
     name='simple-salesforce',
-    version='0.63.0',
+    version='0.65.1',
     author='Nick Catalano',
     packages=['simple_salesforce',],
     url='https://github.com/neworganizing/simple-salesforce',
@@ -42,8 +42,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: Implementation :: PyPy'
     ]
 )
